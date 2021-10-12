@@ -1,7 +1,7 @@
-# FastKnn
+# KNNModel
 
 ## Purpose
-Provide a lib to create a fast kNN index and get results as a pandas dataframe
+Provide a lib to create easily a fast kNN index
 FastKnn use mainly [nmslib](https://github.com/nmslib/nmslib/) as (fast) kNN backend
 
 
