@@ -1,0 +1,17 @@
+name: knnmodel
+
+channels:
+  - conda-forge
+
+dependencies:
+  - python=3.7
+  - pip
+  - setuptools
+  - wheel
+  - pandas
+  - numpy
+  - cloudpickle
+  - scikit-learn
+  - pyyaml
+  - pip:
+    - nmslib # pip install --no-binary :all: nmslib
