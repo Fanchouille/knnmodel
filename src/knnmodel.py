@@ -42,16 +42,16 @@ class KNNModel:
             y = np.array(y)
         return y
 
-    def fit(self, X: np.ndarray, y: Optional[Union[List, np.ndarray]] = None, M: int = 100, efC: int = 2000,
+    def fit(self, X: np.ndarray, y: Optional[Union[List, np.ndarray]] = None, M: int = 50, efC: int = 2000,
             efS: int = 2000):
         """
         Fit the knn_model provided by NMSLIB.
 
         :param X: data to fit the KNN on
         :param y: labels/index to fit the KNN on (defaults to None)
-        :param M:
-        :param efC:
-        :param efS:
+        :param M: rangein 5-100 (increase for better recall but longer indexing)
+        :param efC: increase to augment accuracy (longer indexing)
+        :param efS: increase to augment recall (longer retrieval)
         """
         labels = self._cast_to_numpy(y)
         self.labels = labels
