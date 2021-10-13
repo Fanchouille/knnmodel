@@ -13,5 +13,7 @@ dependencies:
   - cloudpickle
   - scikit-learn
   - pyyaml
+  - sphinx
   - pip:
     - nmslib # pip install --no-binary :all: nmslib
+    - sphinx_rtd_theme

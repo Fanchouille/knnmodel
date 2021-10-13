@@ -1,29 +1,35 @@
 import multiprocessing
 import nmslib
 import numpy as np
-from collections import defaultdict
-from operator import itemgetter
 from typing import List, Union, Tuple, Optional, Dict
 from sklearn.preprocessing import Normalizer
 import cloudpickle
 import os
-import shutil
 from collections import Counter
-import pandas as pd
 
 
 class KNNModel:
 
     def __init__(self, space: str = "cosinesimil", method: str = 'hnsw', l2_normalize: bool = True,
                  is_fitted: bool = False):
+        """
+        :param space: space used to build index  see https://github.com/nmslib/nmslib/blob/master/manual/spaces.md, defaults to 'cosinesimil'
+        :param method: method used to build index see https://github.com/nmslib/nmslib/blob/master/manual/methods.md, defaults to 'hnsw'
+        :param l2_normalize: should data be l2 normalized, defaults to True
+        :param is_fitted: is index fitted, defaults to False
+        """
         self.knn_model = nmslib.init(space=space, method=method)
-        # see https://github.com/nmslib/nmslib/blob/master/manual/spaces.md
         self.l2_normalize = l2_normalize
         self.is_fitted = is_fitted
         self.space = space
         self.method = method
 
     def _expand_dim_and_normalize(self, X: np.ndarray) -> np.ndarray:
+        """
+
+        :param X: numpy array
+        :return: numpy array where each row is L2 normalized
+        """
         if len(X.shape) == 1:
             X = np.expand_dims(X, axis=0)
         if self.l2_normalize:
@@ -38,6 +44,15 @@ class KNNModel:
 
     def fit(self, X: np.ndarray, y: Optional[Union[List, np.ndarray]] = None, M: int = 100, efC: int = 2000,
             efS: int = 2000):
+        """
+        Fit the knn_model provided by NMSLIB.
+
+        :param X: data to fit the KNN on
+        :param y: labels/index to fit the KNN on (defaults to None)
+        :param M:
+        :param efC:
+        :param efS:
+        """
         labels = self._cast_to_numpy(y)
         self.labels = labels
         index_time_params = {'M': M, 'indexThreadQty': multiprocessing.cpu_count() - 1,
@@ -51,6 +66,13 @@ class KNNModel:
 
     def predict_id(self, X: np.ndarray, n_neighbours: int = 10, exclude_identity: bool = False) -> Union[
         Tuple[np.ndarray, np.ndarray], Tuple[None, None]]:
+        """
+
+        :param X: data to predict on
+        :param n_neighbours: number of neighbours
+        :param exclude_identity: if predicting on the same dataset that KNN was fitted on, should we exclude identity match
+        :return: Tuple of ids and distances
+        """
         if self.is_fitted:
             X = self._expand_dim_and_normalize(X)
             nearest_neighbours = self.knn_model.knnQueryBatch(X,
@@ -76,8 +98,20 @@ class KNNModel:
     def predict(self, X: np.ndarray, n_neighbours: int = 10, mode: str = "raw", target: str = "id",
                 exclude_identity: bool = False) -> Union[List[Dict[str, Union[np.array, int, str, float]]], None]:
         """
-        mode in ["raw", "majority_voting", "regression"]
-        target in ["id", "label"]
+
+        :param X: data to predict on
+        :param n_neighbours: number of neighbours
+        :param mode:
+
+                - ``raw`` : returns list of neighbours.
+                - ``majority_voting`` : classification task (majority voting of all NN).
+                - ``regression`` : regression task (mean of all NN).
+        :param target:
+
+                - ``id`` : returns ids (row index)
+                - ``label`` : returns labels (if provided during fit)
+        :param exclude_identity: if predicting on the same dataset that KNN was fitted on, should we exclude identity match
+        :return: Predictions (raw list, majority votes or mean of nearest neighbours)
         """
         predictions, distances = self.predict_id(X, n_neighbours, exclude_identity)
 
@@ -121,13 +155,32 @@ class KNNModel:
 
         return results
 
-    def predict_on_training_set(self, n_neighbours: int = 10, mode: str = "raw", target: str = "id",
-                                exclude_identity: bool = False) -> Union[
-        List[Dict[str, Union[np.array, int, str, float]]], None]:
+    def predict_on_training_set(self, n_neighbours: int = 10, mode: str = "raw",
+                                target: str = "id", exclude_identity: bool = False) \
+            -> Union[List[Dict[str, Union[np.array, int, str, float]]], None]:
+        """
+
+        :param n_neighbours: number of neighbours
+        :param mode:
+
+                - ``raw`` : returns list of neighbours.
+                - ``majority_voting`` : classification task (majority voting of all NN).
+                - ``regression`` : regression task (mean of all NN).
+        :param target:
+
+                - ``id`` : returns ids (row index)
+                - ``label`` : returns labels (if provided during fit)
+        :param exclude_identity: if predicting on the same dataset that KNN was fitted on, should we exclude identity match
+        :return: Predictions (raw list, majority votes or mean of nearest neighbours)
+        """
         return self.predict(X=self.data, n_neighbours=n_neighbours, mode=mode, target=target,
                             exclude_identity=exclude_identity)
 
-    def save(self, folder_path: str = None):
+    def save(self, folder_path: str):
+        """
+
+        :param folder_path: serialize Knn model to folder_path
+        """
         os.makedirs(folder_path, exist_ok=True)
         self.knn_model.saveIndex(folder_path + "/knn_model")
         config = {"l2_normalize": self.l2_normalize,
@@ -144,7 +197,11 @@ class KNNModel:
             with open(folder_path + "/data", 'wb') as handle:
                 cloudpickle.dump(self.data, handle)
 
-    def load(self, folder_path: str = None):
+    def load(self, folder_path: str):
+        """
+
+        :param folder_path: loads Knn model from folder_path
+        """
         with open(folder_path + '/config', 'rb') as f:
             config = cloudpickle.load(f)
         try:
