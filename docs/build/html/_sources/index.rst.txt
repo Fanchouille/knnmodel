@@ -1,6 +1,6 @@
 Welcome to knnmodel's documentation!
 ====================================
-.. autoclass:: src.knnmodel.KNNModel
+.. autoclass:: knnmodel.KNNModel
    :members:
    :private-members:
    :special-members: __init__

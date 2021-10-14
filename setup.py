@@ -24,7 +24,8 @@ setuptools.setup(
     long_description="Easy to use fast kNN",
     long_description_content_type="text/markdown",
     url="https://github.com/Fanchouille/knnmodel.git",
-    packages=setuptools.find_packages(),
+    package_dir={'': 'src'},
+    packages=setuptools.find_packages("src"),
     install_requires=requirements,
     classifiers=[
         "Intended Audience :: Developers",
