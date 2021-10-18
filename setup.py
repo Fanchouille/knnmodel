@@ -15,6 +15,7 @@ for elem in conda_environment['dependencies']:
     elif isinstance(elem, dict) and 'pip' in elem:
         requirements.extend(elem['pip'])
 
+
 setuptools.setup(
     name='knnmodel',
     version='0.0.1',
@@ -25,7 +26,7 @@ setuptools.setup(
     long_description_content_type="text/markdown",
     url="https://github.com/Fanchouille/knnmodel.git",
     package_dir={'': 'src'},
-    packages=setuptools.find_packages("src"),
+    packages=setuptools.find_packages("src")+requirements,
     install_requires=requirements,
     classifiers=[
         "Intended Audience :: Developers",

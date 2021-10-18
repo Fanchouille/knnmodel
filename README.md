@@ -23,6 +23,7 @@ Example with dense data:
 
 Unsupervised (target is `id`) : 
 
+    from knnmodel import KNNModel
     knn_model = KNNModel() 
     knn_model.fit(X=X_train) # no labels
     results_raw = knn_model.predict(X_test, n_neighbours=10, mode="raw", target="id") # predict & fetch list of 10 neighbours for each row in X_test
@@ -30,8 +31,9 @@ Unsupervised (target is `id`) :
     results_on_training_set_raw = knn_model.predict_on_training_set(n_neighbours=10, mode="raw", target="id", exclude_identity=True) # predict & fetch list of 10 neighbours for each row in training set without identity
     results_on_training_set_majority = knn_model.predict_on_training_set(n_neighbours=10, mode="majority_voting", target="id", exclude_identity=True)
 
-Supervised (target is label`)`:
-    
+Supervised (target is `label`):
+
+    from knnmodel import KNNModel    
     knn_model = KNNModel()
     knn_model.fit(X_train, y=y_train) # labels
     results_raw = knn_model.predict(X_train, n_neighbours=10, mode="raw", target="label")
