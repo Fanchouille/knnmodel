@@ -1,9 +1,0 @@
-README.md
-setup.py
-src/knnmodel/__init__.py
-src/knnmodel/knnmodel.py
-src/knnmodel.egg-info/PKG-INFO
-src/knnmodel.egg-info/SOURCES.txt
-src/knnmodel.egg-info/dependency_links.txt
-src/knnmodel.egg-info/requires.txt
-src/knnmodel.egg-info/top_level.txt

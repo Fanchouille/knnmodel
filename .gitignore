@@ -8,6 +8,10 @@
 __pycache__/
 *.egg-info/
 build/
+src/*.egg-info
+.installed.cfg
+*.egg
+.cache
 
 # Anaconda environment
 .conda/
