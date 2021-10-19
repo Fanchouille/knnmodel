@@ -43,7 +43,7 @@ class KNNModel:
         return y
 
     def fit(self, X: np.ndarray, y: Optional[Union[List, np.ndarray]] = None, M: int = 50, efC: int = 2000,
-            efS: int = 2000):
+            efS: int = 200, indexThreadQty: int = None):
         """
         Fit the knn_model provided by NMSLIB.
 
@@ -53,9 +53,11 @@ class KNNModel:
         :param efC: increase to augment accuracy (longer indexing)
         :param efS: increase to augment recall (longer retrieval)
         """
+        if indexThreadQty is None:
+            indexThreadQty = multiprocessing.cpu_count() - 1
         labels = self._cast_to_numpy(y)
         self.labels = labels
-        index_time_params = {'M': M, 'indexThreadQty': multiprocessing.cpu_count() - 1,
+        index_time_params = {'M': M, 'indexThreadQty': indexThreadQty,
                              'efConstruction': efC, 'post': 2}
         X = self._expand_dim_and_normalize(X)
         self.knn_model.addDataPointBatch(X)
